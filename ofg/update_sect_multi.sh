@@ -1,19 +1,5 @@
 #!/bin/sh
 
- # /*******************************************************************************
- #  * Copyright 2009-2015 by Roger B. Leuthner
- #  *
- #  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- #  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- #  * GNU General Public License for more details.
- #  *
- #  * Commercial Distribution License
- #  * If you would like to distribute OpenFlightGPS (or portions thereof) under a license other than
- #  * the "GNU General Public License, version 2", contact Roger B. Leuthner through GitHub.
- #  *
- #  * GNU Public License, version 2
- #  * All distribution of OpenFlightGPS must conform to the terms of the GNU Public License, version 2.
- #  ******************************************************************************/
 
 if [ $# != 0 ]
 then
@@ -39,7 +25,7 @@ rm -f UPDATE_DOWNLOAD_PAGE UPDATE_PRODUCT_URLS TMP_PRODUCT_URLS CURRENT_DOWNLOAD
 # get the URL for the chart list page, it depends upon the current cycle
 wget $POINTER_BASE_PAGE -O DOWNLOAD_POINTER_PAGE
 
-grep "sectional_files" DOWNLOAD_POINTER_PAGE | grep -v PDFs | sed -e 's/.*<td><a href=\"'// -e 's/.zip.*/.zip/' | grep -v Aleutian | grep -v Hawaii|grep -v Seward | grep -v Fairbanks | grep -v Whitehorse | grep -v Barrow | grep -v Nome |grep -v Juneau |grep -v Klamath |grep -v Kodiak |grep -v Ketchikan|grep -v Dutch |grep -v Cold |grep -v Lisburne|grep -v Bethel|grep -v Dawson|grep -v Anchorage > DOWNLOAD_PAGE.$$
+grep "sectional_files" DOWNLOAD_POINTER_PAGE | grep -v PDFs | sed -e 's/.*<td><a href=\"'// -e 's/.zip.*/.zip/' | grep -v Aleutian | grep -v Hawaii|grep -v Seward | grep -v Fairbanks | grep -v Whitehorse | grep -v Barrow | grep -v Nome |grep -v Juneau | grep -v Kodiak |grep -v Ketchikan|grep -v Dutch |grep -v Cold |grep -v Lisburne|grep -v Bethel|grep -v Dawson|grep -v Anchorage > DOWNLOAD_PAGE.$$
 
 diff DOWNLOAD_PAGE.$$ DOWNLOAD_PAGE | grep "< " | sed 's/< //' > CURRENT_DOWNLOAD_DIFFS
 
@@ -53,6 +39,9 @@ mv DOWNLOAD_PAGE.$$ DOWNLOAD_PAGE
 i=0
 cat CURRENT_DOWNLOAD_DIFFS | while read inline 
 do
+	# clean up the url
+	inline=`echo $inline | sed 's/.*<td><cfoutput><a href=\"//'`
+
 	../bin/update_sect_multi_worker.sh "${inline}" &
 	
 	if [ $i -eq 0 ]
